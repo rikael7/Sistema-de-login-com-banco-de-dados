@@ -70,8 +70,6 @@ async function uploadVideo(req, res) {
     }
 }
 
-
-
 // ======================================================
 // CONTROLLER DE AUTENTICAÇÃO
 // ======================================================
@@ -206,6 +204,19 @@ async function updateUserProfile(
 
     return findUserById(id);
 }
+
+
+
+
+
+
+// controllers/missoesController.js
+//
+// Ajuste o caminho do require abaixo para onde está o seu pool de conexão
+// do 'pg' (ex.: const pool = require('../db');)
+
+
+ 
 
 
 

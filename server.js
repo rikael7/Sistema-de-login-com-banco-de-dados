@@ -132,7 +132,7 @@ app.get('/404', (req, res) => {
 
 // ROTAS API
 app.use('/auth', authRoutes);
-app.use('/api', isAuthenticated, protectedRoutes);
+app.use('/api', protectedRoutes);
 
 
 
