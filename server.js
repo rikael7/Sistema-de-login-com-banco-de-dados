@@ -99,7 +99,7 @@ app.use(
 // enviar front
 // =============
 
-app.get('/', isAuthenticated, isAuthenticated, (req, res) => {
+app.get('/', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
 });
 
