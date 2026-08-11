@@ -54,13 +54,91 @@ const registerValidationRules = [
     .isLength({ min: 5, max: 50 }).withMessage('O nome deve ter entre 5 e 50 caracteres.')
     // Whitelist: só letras (com acentos), espaços, apóstrofo e hífen.
     // Bloqueia por padrão qualquer tentativa de injetar <script>, tags, etc.
-    .matches(/^[\p{L}\s'-]+$/u).withMessage('O nome deve conter apenas letras.'),
+    .matches(/^[\p{L}]+(?:[ '-][\p{L}]+)*$/u).withMessage('O nome deve conter apenas letras.'),
 
   body('email')
     .trim()
     .notEmpty().withMessage('O email é obrigatório.')
     .isEmail().withMessage('Email inválido.')
     .isLength({ min: 5, max: 254 }).withMessage('Email deve conter entre 5 e 254 caracteres.')
+      .custom((email) => {
+            const allowedDomains = [
+             // Google
+    'gmail.com',
+    'googlemail.com',
+
+    // Microsoft
+    'outlook.com',
+    'hotmail.com',
+    'live.com',
+    'msn.com',
+
+    // Yahoo
+    'yahoo.com',
+    'yahoo.com.br',
+    'yahoo.co.uk',
+    'yahoo.fr',
+    'yahoo.de',
+    'yahoo.es',
+    'yahoo.it',
+    'yahoo.ca',
+    'yahoo.com.au',
+    'yahoo.co.in',
+
+    // Apple
+    'icloud.com',
+    'me.com',
+    'mac.com',
+
+    // Proton
+    'proton.me',
+    'protonmail.com',
+    'pm.me',
+
+    // Zoho
+    'zoho.com',
+    'zohomail.com',
+
+    // AOL
+    'aol.com',
+
+    // GMX
+    'gmx.com',
+    'gmx.net',
+    'gmx.de',
+
+    // Mail.com
+    'mail.com',
+
+    // Yandex
+    'yandex.com',
+    'yandex.ru',
+
+    // Fastmail
+    'fastmail.com',
+
+    // Tuta
+    'tuta.com',
+    'tutanota.com',
+
+    // Brasil
+    'bol.com.br',
+    'uol.com.br',
+    'terra.com.br',
+    'ig.com.br',
+    'globo.com',
+    'globomail.com'
+        ];
+
+        const domain = email.split('@')[1]?.toLowerCase();
+
+        if (!allowedDomains.includes(domain)) {
+            throw new Error('Este domínio de email não permitido.');
+        }
+
+        return true;
+    })
+
     .normalizeEmail(), // remove variações (Maiusculas, pontos no gmail, etc.)
     
   body('password')
