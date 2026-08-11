@@ -4,7 +4,7 @@ const { isAuthenticated, admin } = require('../middleware/authMiddleware');
 
 // IMPORTAR CONTROLLERS
 const { findUserById } = require('../models/userModel'); // Controller
-const adminController = require('../models/userModel'); // controler do admin
+const authController = require('../models/userModel'); // controler do admin
 const path = require('path'); // biblioteca para manipulação de caminhos de arquivos
 const router = express.Router();
 
@@ -59,7 +59,7 @@ const upload = multer({
 //   ROUTES NORMAL USER
 // =================
 
-
+router.get('/me', isAuthenticated ,authController.obterPerfil);
 
 
 

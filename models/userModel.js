@@ -123,6 +123,36 @@ async function finduserbyname(name) {
 // CONTROLLERS DO USUÁRIO
 // ======================================================
 
+async function obterPerfil(req, res) {
+    if (!req.session || !req.session.userId) {
+        return res.status(401).json({ erro: 'Nenhuma sessão ativa.' });
+    }
+ 
+    try {
+        const resultado = await pool.query(
+            `SELECT name, created_at
+             FROM users
+             WHERE id = $1`,
+            [req.session.userId]
+        );
+ 
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({ erro: 'Usuário não encontrado.' });
+        }
+ 
+        const { name, created_at } = resultado.rows[0];
+ 
+        return res.json({
+            nome: name,
+            registradoEm: created_at, // ISO string — formatação de data fica no front
+        });
+    } catch (erro) {
+        console.error('Erro ao buscar perfil do usuário:', erro);
+        return res.status(500).json({ erro: 'Não foi possível carregar o perfil.' });
+    }
+}
+
+
 
 // Buscar usuário pelo ID PARA BUSCAR INFORMAÇÕES DO PROPRIO PERFIL
 async function findUserById(id) {
@@ -226,6 +256,7 @@ module.exports = {
     finduserbyname,
     findUserById,
     createUser,
+    obterPerfil,
     updateUserProfile
 };
 

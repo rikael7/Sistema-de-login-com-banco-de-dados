@@ -82,6 +82,13 @@ h1 {
     letter-spacing: -0.01em;
 }
 
+.dado-registro {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 20px;
+}
+
 .descricao {
     font-size: 15px;
     line-height: 1.65;
@@ -181,7 +188,8 @@ footer a:hover { border-color: var(--accent); color: var(--accent); }
   <div class="cartao">
     <span class="selo-status">Sessão autenticada</span>
 
-    <h1>Você está logado =)</h1>
+    <h1 id="saudacao">Você está logado =)</h1>
+    <p id="dataRegistro" class="dado-registro"></p>
 
     <p class="descricao">
         Este projeto foi construído para demonstrar, em produção, um fluxo de
@@ -211,16 +219,67 @@ footer a:hover { border-color: var(--accent); color: var(--accent); }
         <a class="botao botao--primario" href="https://github.com/rikael7/Sistema-de-login-com-banco-de-dados" target="_blank" rel="noopener">
             Ver repositório e documentação
         </a>
-        <a class="botao botao--secundario" href="/auth/logout">
+        <button type="button" class="botao botao--secundario" id="botaoSair">
             Encerrar sessão
-        </a>
+        </button>
     </div>
   </div>
 </main>
 
 <footer>
-    Desenvolvido por <a href="https://github.com/SEU-USUARIO" target="_blank" rel="noopener">Rikael</a> · projeto de portfólio
+    Desenvolvido por <a href="https://github.com/rikael7" target="_blank" rel="noopener">Rikael</a> · projeto de portfólio
 </footer>
+
+<script>
+  const saudacao = document.getElementById('saudacao');
+  const dataRegistro = document.getElementById('dataRegistro');
+
+  function formatarData(isoString) {
+    const data = new Date(isoString);
+    return data.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  async function carregarPerfil() {
+    try {
+      const resposta = await fetch('/api/me', {
+        headers: { Accept: 'application/json' },
+        credentials: 'include',
+      });
+
+      if (!resposta.ok) {
+        saudacao.textContent = 'Você está logado =)';
+        return;
+      }
+
+      const dados = await resposta.json();
+      saudacao.textContent = `Olá ${dados.nome}, você está logado =)`;
+      dataRegistro.textContent = `Registrado no site em ${formatarData(dados.registradoEm)}`;
+    } catch (erro) {
+      saudacao.textContent = 'Você está logado =)';
+    }
+  }
+
+  carregarPerfil();
+
+  document.getElementById('botaoSair').addEventListener('click', async () => {
+    try {
+      await fetch('/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (erro) {
+      console.error('Falha ao encerrar sessão:', erro);
+    } finally {
+      window.location.href = '/login';
+    }
+  });
+</script>
 
 </body>
 </html>

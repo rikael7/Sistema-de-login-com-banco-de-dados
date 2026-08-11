@@ -5,205 +5,231 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistema de chamados — Criar conta</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    background: #f4f5f7;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .topbar {
-    width: 100%;
-    max-width: 1500px;
-    padding: 32px 40px;
-  }
+:root {
+  --bg: #0b1120;
+  --bg-soft: #111827;
+  --card: #151e32;
+  --border: #24304a;
+  --text: #e7ebf3;
+  --text-secondary: #97a3bd;
+  --accent: #4f8dfd;
+  --accent-soft: rgba(79, 141, 253, 0.12);
+  --danger: #f0716f;
+  --danger-soft: rgba(240, 113, 111, 0.12);
+  --success: #34c98f;
+  --success-soft: rgba(52, 201, 143, 0.12);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 22px;
-    font-weight: 700;
-    color: #1a1d29;
-  }
+body {
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(circle at 15% 0%, rgba(79, 141, 253, 0.08), transparent 45%),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .logo svg { flex-shrink: 0; }
+.topbar {
+  width: 100%;
+  max-width: 1500px;
+  padding: 32px 40px;
+}
 
-  .card-wrap {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 20px 20px 80px;
-  }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
 
-  .card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 48px 52px 44px;
-    width: 100%;
-    max-width: 460px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-  }
+.logo svg { flex-shrink: 0; }
 
-  .eyebrow {
-    color: #9ca3af;
-    font-size: 15px;
-    margin-bottom: 6px;
-  }
+.card-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px 20px 80px;
+}
 
-  h1 {
-    font-size: 30px;
-    font-weight: 800;
-    color: #1a1d29;
-    margin-bottom: 32px;
-  }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 48px 52px 44px;
+  width: 100%;
+  max-width: 460px;
+}
 
-  .field {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid #d7dae0;
-    border-radius: 10px;
-    font-size: 15px;
-    color: #1a1d29;
-    background: #fff;
-    margin-bottom: 16px;
-    outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
+.eyebrow {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin-bottom: 6px;
+}
 
-  .field::placeholder { color: #9ca3af; }
+h1 {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 32px;
+  letter-spacing: -0.01em;
+}
 
-  .field:focus {
-    border-color: #3b6df0;
-    box-shadow: 0 0 0 3px rgba(59, 109, 240, 0.12);
-  }
+.field {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--bg-soft);
+  margin-bottom: 16px;
+  outline: none;
+  font-family: var(--font-sans);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
 
-  .field.error {
-    border-color: #e0504f;
-  }
+.field::placeholder { color: var(--text-secondary); }
 
-  .error-msg {
-    color: #e0504f;
-    font-size: 13px;
-    margin: -10px 0 14px;
-    display: none;
-  }
+.field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
 
-  .hint {
-    font-size: 12px;
-    color: #9ca3af;
-    margin: -10px 0 16px;
-  }
+.field.error {
+  border-color: var(--danger);
+}
 
-  .row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 28px;
-  }
+.error-msg {
+  color: var(--danger);
+  font-size: 13px;
+  margin: -10px 0 14px;
+  display: none;
+}
 
-  .terms {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 14px;
-    color: #374151;
-    cursor: pointer;
-    user-select: none;
-  }
+.hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: -10px 0 16px;
+}
 
-  .terms input {
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-    accent-color: #3b6df0;
-    cursor: pointer;
-    margin-top: 1px;
-    flex-shrink: 0;
-  }
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
 
-  .terms a {
-    color: #3b6df0;
-    text-decoration: underline;
-  }
+.terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
 
-  .btn-primary {
-    width: 100%;
-    padding: 14px;
-    background: #3b6df0;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 14px;
-    transition: background 0.15s ease, transform 0.05s ease;
-  }
+.terms input {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
 
-  .btn-primary:hover { background: #2f5cd6; }
-  .btn-primary:active { transform: translateY(1px); }
-  .btn-primary:disabled { background: #9db3f2; cursor: not-allowed; }
+.terms a {
+  color: var(--accent);
+  text-decoration: underline;
+}
 
-  .btn-google {
-    width: 100%;
-    padding: 13px;
-    background: #fff;
-    color: #1a1d29;
-    border: 1px solid #d7dae0;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 24px;
-    transition: background 0.15s ease;
-  }
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #05101f;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 14px;
+  font-family: var(--font-sans);
+  transition: background 0.15s ease, transform 0.05s ease;
+}
 
-  .btn-google:hover { background: #f9fafb; }
+.btn-primary:hover { background: #6fa2fd; }
+.btn-primary:active { transform: translateY(1px); }
+.btn-primary:disabled { background: #2c3a58; color: var(--text-secondary); cursor: not-allowed; }
 
-  .footer-text {
-    text-align: center;
-    font-size: 14px;
-    color: #6b7280;
-  }
+.btn-google {
+  width: 100%;
+  padding: 13px;
+  background: var(--bg-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  font-family: var(--font-sans);
+  transition: background 0.15s ease;
+}
 
-  .footer-text a {
-    color: #3b6df0;
-    text-decoration: underline;
-    font-weight: 500;
-  }
+.btn-google:hover { background: #1a2540; }
 
-  .server-msg {
-    font-size: 13px;
-    text-align: center;
-    margin-bottom: 16px;
-    display: none;
-    padding: 10px;
-    border-radius: 8px;
-  }
+.footer-text {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
 
-  .server-msg.error {
-    display: block;
-    background: #fdecea;
-    color: #b3261e;
-  }
+.footer-text a {
+  color: var(--accent);
+  text-decoration: underline;
+  font-weight: 500;
+}
 
-  .server-msg.success {
-    display: block;
-    background: #e6f4ea;
-    color: #1e7e34;
-  }
+.server-msg {
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 16px;
+  display: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+}
+
+.server-msg.error {
+  display: block;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.server-msg.success {
+  display: block;
+  background: var(--success-soft);
+  color: var(--success);
+}
 </style>
 </head>
 <body>
@@ -211,9 +237,9 @@
   <div class="topbar">
     <div class="logo">
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <path d="M14 2L25 8V20L14 26L3 20V8L14 2Z" stroke="#3b6df0" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M3 8L14 14L25 8" stroke="#3b6df0" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M14 14V26" stroke="#3b6df0" stroke-width="2"/>
+        <path d="M14 2L25 8V20L14 26L3 20V8L14 2Z" stroke="#4f8dfd" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M3 8L14 14L25 8" stroke="#4f8dfd" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M14 14V26" stroke="#4f8dfd" stroke-width="2"/>
       </svg>
     </div>
   </div>
@@ -258,6 +284,7 @@
           required
         >
         <div class="hint">Mínimo de 8 caracteres.</div>
+        <div class="hint">Deve conter ao menos uma letra maiúscula</div>
         <div class="error-msg" id="passwordError">A senha precisa ter no mínimo 8 caracteres.</div>
 
         <input
@@ -274,7 +301,7 @@
         <div class="row">
           <label class="terms">
             <input type="checkbox" id="terms" name="terms">
-            <span>Eu concordo com os <a href="/terms">Termos de uso</a></span>
+            <span>Eu concordo com os <a href="#">Termos de uso</a></span>
           </label>
         </div>
         <div class="error-msg" id="termsError" style="margin-top: -20px;">Você precisa aceitar os termos para continuar.</div>

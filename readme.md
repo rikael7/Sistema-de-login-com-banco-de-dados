@@ -1,275 +1,144 @@
-#  Sistema de Chamados Empresarial
+# Sistema de Login com Banco de Dados
 
-> Plataforma empresarial com sistema de chamados (OS) integrado, permitindo cadastro/login de usuários, upload de arquivos, abertura e acompanhamento de chamados, e um painel administrativo completo.
+> Projeto de portfólio focado em demonstrar, em produção, um fluxo completo de autenticação por sessão: cadastro, login, logout e uma rota protegida — usando bcrypt, express-session e PostgreSQL.
 
-Sistema web desenvolvido em Node.js/Express, com autenticação por sessão, upload de arquivos (com anexos de chamados armazenados no Supabase Storage) e um módulo de chamados técnicos com anexos, comentários, prioridades e status de atendimento.
+Sistema web desenvolvido em Node.js/Express, com autenticação por sessão persistida em banco de dados, senhas com hash via bcrypt e uma área autenticada que exibe o nome do usuário e a data de registro, buscados diretamente do banco.
 
-##  Demonstração
+## Demonstração
 
 Quer testar o sistema em funcionamento?
 
- **Acesse a versão em produção:**  
-**https://Embreve.onrender.com**
+**Acesse a versão em produção:**
+**https://SEU-DEPLOY-AQUI.onrender.com**
 
-> **Observação:** Na primeira visita o Render pode levar alguns segundos para iniciar o servidor, pois utiliza hibernação em planos gratuitos.
+> **Observação:** dependendo do provedor de hospedagem, a primeira visita pode levar alguns segundos para o servidor iniciar (hibernação em planos gratuitos).
 
 ## 🚧 Projeto em Desenvolvimento
 
-> **Este projeto está em constante evolução.**
-
-Novas funcionalidades, melhorias, correções e refatorações são adicionadas frequentemente. Durante esse processo, algumas telas, recursos e imagens presentes na pasta `docs` podem sofrer alterações e estarem diferentes do projeto real, portanto peço compreensão.
-
-Estou trabalhando continuamente para manter toda a documentação e as capturas de tela atualizadas, mas pode haver um pequeno intervalo entre as mudanças no código e a atualização da documentação, por ser um projeto independente pequenas divergências podem acontecer.
-
-Agradeço a compreensão! =)
+> Este projeto nasceu como uma demonstração enxuta de autenticação e está em evolução constante — novas telas e ajustes de segurança podem ser adicionados com o tempo.
 
 ---
-#  Sumário
 
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [ Demonstração](#-demonstração-1)
-- [ Arquitetura do Projeto](#-arquitetura-do-projeto)
-- [ Fluxo da Aplicação](#fluxo-da-aplicação)
-  - [ Cadastro de Usuário](#cadastro-de-usuário)
-  - [ Login](#login)
-  - [ Logout](#logout)
-  - [ Consultar Chamados](#consultar-chamados)
-  - [ Buscar Chamado](#buscar-chamado)
-  - [ Criar Chamado](#criar-chamado)
-  - [ Enviar Anexos](#enviar-anexos)
-  - [ Fluxo das Rotas Administrativas](#rotas-administrativas)
-- [ Upload de Anexos com Supabase Storage](#-upload-de-anexos-com-supabase-storage)
-- [ Tecnologias Utilizadas](#-tecnologias-utilizadas)
-- [ Estrutura de Pastas](#-estrutura-de-pastas)
-- [ Instalação](#-instalação)
-- [ Configuração do Ambiente](#-configuração-do-ambiente)
-- [ Banco de Dados](#-banco-de-dados)
-- [ Executando o Projeto](#-executando-o-projeto)
-- [ Documentação da API](#-documentação-da-api)
+# Sumário
+
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Demonstração](#demonstração)
+- [Arquitetura do Projeto](#arquitetura-do-projeto)
+- [Fluxo da Aplicação](#fluxo-da-aplicação)
+  - [Cadastro de Usuário](#cadastro-de-usuário)
+  - [Login](#login)
+  - [Logout](#logout)
+  - [Consultar Perfil (rota protegida)](#consultar-perfil-rota-protegida)
+- [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Design System](#design-system)
+- [Estrutura de Pastas](#estrutura-de-pastas)
+- [Instalação](#instalação)
+- [Configuração do Ambiente](#configuração-do-ambiente)
+- [Banco de Dados](#banco-de-dados)
+- [Executando o Projeto](#executando-o-projeto)
+- [Documentação da API](#documentação-da-api)
   - [Autenticação](#autenticação)
-  - [Usuário](#usuário-rotas-protegidas)
-  - [Admin](#admin-rotas-protegidas--permissão-de-admin)
-  - [Chamados](#chamados)
-  - [Upload Público](#upload-público)
-- [ Segurança](#-segurança)
-- [ Testes](#-testes)
-- [ Melhorias Futuras](#-melhorias-futuras)
-- [ Como Contribuir](#-como-contribuir)
-- [ Licença](#-licença)
-- [ Autor](#-autor)
+  - [Perfil (rota protegida)](#perfil-rota-protegida)
+- [Segurança](#segurança)
+- [Melhorias Futuras](#melhorias-futuras)
+- [Como Contribuir](#como-contribuir)
+- [Licença](#licença)
+- [Autor](#autor)
 
+---
 
+# Sobre o Projeto
 
-
-#  Sobre o Projeto
-
-O Sistema de chamados nasceu com um sistema robusto de autenticação de usuarios visando a segurança e evoluiu para incluir um sistema de chamados/OS. A aplicação permite que usuários se cadastrem, façam login, enviem arquivos e abram chamados; enquanto administradires alteram prioridades e o status de cada atendimento.
+O Sistema de Login com Banco de Dados foi criado para mostrar, de forma direta e sem distrações, como implementar autenticação de usuários em produção: cadastro com validação, login com verificação de senha via bcrypt, sessão persistida no PostgreSQL e uma rota protegida no back-end — que nunca entrega conteúdo para quem não está autenticado, mesmo que a pessoa tente acessar a URL diretamente.
 
 ## Funcionalidades
 
-- ✔ Cadastro e autenticação de usuários (sessão + bcrypt)
-- ✔ Sistema de login com regeneração de sessão (anti session-fixation)
-- ✔ Controle de permissões (usuário comum x admin)
-- ✔ Área administrativa (upload de vídeo, gestão de chamados)
-- ✔ Criação e gerenciamento de chamados (OS) com prioridade e status
-- ✔ Upload de anexos de chamados direto para o **Supabase Storage** (bucket privado, sem passar pelo disco do servidor)
-- ✔ Visualização de anexos via **signed URL** temporária, gerada sob demanda para qualquer usuário autenticado
-- ✔ Upload e armazenamento de outros arquivos (avatares, vídeos, ZIP/PDF)
-- ✔ Validação de dados (nome, e-mail, senha, domínio MX)
-- ✔ Sanitização anti-XSS em todas as entradas de texto
-- ✔ Integração com banco de dados PostgreSQL
+- ✔ Cadastro de usuário com validação de nome, e-mail e senha
+- ✔ Confirmação de senha e aceite de termos no registro
+- ✔ Login com verificação de credenciais via bcrypt
+- ✔ Sessão de usuário persistida em banco de dados (não em memória)
+- ✔ Rota protegida por middleware — bloqueia acesso de quem não está logado, sem depender apenas do front-end
+- ✔ Logout que efetivamente destrói a sessão no servidor
+- ✔ Endpoint de perfil que retorna nome e data/hora de registro do usuário autenticado
+- ✔ Botão de acesso demonstrativo ("login como recrutador") para facilitar avaliação do projeto
+- ✔ Mensagens de erro e sucesso tratadas tanto no front quanto no back-end
 
 ---
 
-#  Demonstração
-
-
-
-Exemplo:
-
-## Login recrutador
-![Telas](./docs/teladelogin.png)
-
-## Tela do Login/Register/Rota inexistente
-![Telas](./docs/telas.png)
-
-## Tela do usuário 
-![Tela de User](./docs/dashboarduser.PNG)
-
-## Tela do usuário 
-![Sistema de bloqueio de chamados](./docs/bloqueiodechamado.png)
-
-## Tela do admin 
-![Tela de Admin](./docs/dashboardadmin.PNG)
-
-
----
-
-#  Arquitetura do Projeto
+# Arquitetura do Projeto
 
 ```
 Usuário
    |
    ↓
-Frontend (login, registro, upload, dashboard, admin)
+Frontend (login, registro, área autenticada)
    |
    ↓
 API Backend (Express)
    |
-   ├── Middlewares (auth, admin, sanitize, validators, upload/multer)
+   ├── Middlewares (sessão/autenticação)
    |
-   ├── Banco de Dados (PostgreSQL)
-   |      ├── users
-   |      ├── videos
-   |      ├── chamados
-   |      ├── chamado_anexos      (guarda apenas o path dentro do bucket)
-   |      └── chamado_comentarios
+   ├── Controllers (auth)
    |
-   └── Armazenamento de Arquivos
-          ├── Disco local (multer) — avatares e vídeos
-          └── Supabase Storage — anexos de chamados (bucket privado) e ZIP/RAR/PDF
-                 └── acesso sempre via signed URL, gerada na hora da leitura
+   └── Banco de Dados (PostgreSQL)
+          ├── users     (dados do usuário e senha em hash)
+          └── session   (sessões ativas — gerenciada por connect-pg-simple)
 ```
 
----
 ---
 
 # Fluxo da Aplicação
 
-Fluxo de execução das principais requisições do sistema, da chegada da requisição até a resposta ao cliente.
-
-## Sumário
-
-- [Pipeline Base](#pipeline-base)
-- [Cadastro de Usuário](#cadastro-de-usuário)
-- [Login](#login)
-- [Logout](#logout)
-- [Consultar Chamados](#consultar-chamados)
-- [Buscar Chamado](#buscar-chamado)
-- [Criar Chamado](#criar-chamado)
-- [Enviar Anexos](#enviar-anexos)
-- [Rotas Administrativas](#rotas-administrativas)
-
----
+Fluxo de execução das principais requisições, da chegada ao cliente até a resposta.
 
 ## Pipeline Base
 
-Toda requisição passa por esse núcleo comum antes do controller específico. Os fluxos abaixo mostram só o que muda em relação a ele.
-
 ```text
-Cliente → Express (app.js) → Sanitize Middleware → Auth Middleware → Controller → Model → PostgreSQL → Resposta HTTP
+Cliente → Express (server.js) → Middleware de Sessão → Controller → PostgreSQL → Resposta HTTP
 ```
-
----
 
 ## Cadastro de Usuário
 
 `POST /auth/register`
 
 ```text
-Cliente → Sanitize → Auth Middleware (rota pública, authtrue) → Validação (express-validator)
-   → Auth Controller (createUser) → User Model → PostgreSQL → Resposta HTTP
+Cliente → Validação de campos (nome, e-mail, senha, confirmação, termos)
+   → Auth Controller → Hash da senha (bcrypt) → INSERT em users → PostgreSQL
+   → Resposta HTTP
 ```
-
----
 
 ## Login
 
 `POST /auth/login`
 
 ```text
-Cliente → Sanitize → Auth Controller → User Model → PostgreSQL
-   → Comparação de senha (bcrypt) → Regeneração da Sessão → Session Cookie → Resposta HTTP
+Cliente → Auth Controller → SELECT em users pelo e-mail
+   → Comparação de senha (bcrypt) → Criação da sessão → Session Cookie
+   → Resposta HTTP (redirectTo)
 ```
-
----
 
 ## Logout
 
 `POST /auth/logout`
 
 ```text
-Cliente → Sanitize → Destruição da Sessão → Resposta HTTP
+Cliente → Destruição da sessão no servidor → Limpeza do cookie → Resposta HTTP
 ```
 
----
+## Consultar Perfil (rota protegida)
 
-## Consultar Chamados
-
-`GET /api/chamados`
+`GET /api/me`
 
 ```text
-Cliente → Sanitize → Auth Middleware
-   → Chamados Controller (conta anexos via LEFT JOIN) → PostgreSQL → Resposta HTTP
+Cliente → Middleware de Sessão (bloqueia se não houver sessão ativa)
+   → Auth Controller (obterPerfil) → SELECT name, created_at em users pelo id da sessão
+   → Resposta HTTP { nome, registradoEm }
 ```
 
----
-
-## Buscar Chamado
-
-`GET /api/chamados/:id`
-
-```text
-Cliente → Sanitize → Auth Middleware → Chamados Controller
-   → PostgreSQL (chamado + paths dos anexos)
-   → Supabase Storage (signed URL por anexo, válida 1h)
-   → Resposta HTTP (anexos já com "url" pronta)
-```
+> **Observação:** essa rota é a base da área autenticada, que exibe "Olá {nome}, você está logado =)" junto com a data de registro do usuário.
 
 ---
-
-## Criar Chamado
-
-`POST /api/chamados` (multipart/form-data)
-
-```text
-Cliente → Sanitize → Auth Middleware → Multer (memoryStorage, sem salvar em disco)
-   → Chamados Controller:
-        BEGIN transação
-        → INSERT chamado
-        → por anexo: upload Supabase Storage + createSignedUrl
-        → INSERT chamado_anexos (salva só o path)
-        → COMMIT (ou ROLLBACK + remoção dos arquivos, em caso de erro)
-   → Resposta HTTP (anexos com "url" assinada)
-```
-
----
-
-## Enviar Anexos
-
-`POST /api/chamados/:id/anexos` (multipart/form-data)
-
-```text
-Cliente → Sanitize → Auth Middleware → Multer (memoryStorage)
-   → Chamados Controller (reaproveita subirAnexo da criação de chamado)
-   → Supabase Storage + PostgreSQL → Resposta HTTP
-```
-
----
-
-## Rotas Administrativas
-
-```text
-Cliente → Sanitize → Auth Middleware → Verificação de Administrador → Controller → PostgreSQL → Resposta HTTP
-```
-
-> **Observação:** todas as rotas protegidas exigem sessão válida. As rotas administrativas fazem uma verificação adicional de privilégio de admin.
-#  Upload de Anexos com Supabase Storage
-
-Os anexos de chamados **não** ficam no disco do servidor — eles vão direto para um bucket privado no Supabase Storage. Resumo do funcionamento:
-
-1. O `multer` está configurado com `memoryStorage()`, então o arquivo enviado pelo formulário chega ao controller como `arquivo.buffer`, sem nunca tocar o disco.
-2. `utils/supabaseAnexos.js` centraliza a lógica de Storage:
-   - `subirAnexo(chamadoId, arquivo)` — sobe o buffer para o bucket `chamados-anexos`, com um nome único (`<chamadoId>/<uuid>.<extensão>`), e já retorna uma signed URL válida por 1 hora.
-   - `removerAnexos(nomesArquivos)` — remove arquivos do bucket; usado em rollback quando a transação do Postgres falha.
-   - `gerarUrlAssinada(nomeArquivo)` — gera uma nova signed URL sob demanda, usada sempre que um chamado é visualizado (a URL da criação já pode ter expirado).
-3. O banco (`chamado_anexos.caminho_arquivo`) guarda **apenas o path interno do bucket**, nunca uma URL — assim a expiração da signed URL não corrompe nada, ela é sempre gerada de novo na leitura.
-4. Como o bucket é privado, o backend usa a **service_role key** do Supabase (nunca a chave pública/`anon`), o que dá acesso total ao Storage sem depender de policies de RLS.
-5. Qualquer usuário autenticado que acesse `GET /api/chamados/:id` recebe os anexos já com `url` pronta para uso direto em `<img src>` ou `<a href>`.
-
----
-
-----
 
 # Tecnologias Utilizadas
 
@@ -278,26 +147,20 @@ Os anexos de chamados **não** ficam no disco do servidor — eles vão direto p
 - Node.js
 - Express.js
 - PostgreSQL (`pg`)
-- Express Session
-- Middleware de autenticação (`isAuthenticated`, `admin`, `authtrue`)
-- Upload de arquivos (`multer`, com `memoryStorage` para anexos de chamados)
-- Validação (`express-validator`)
-- Sanitização anti-XSS (`xss`)
+- express-session (com persistência via `connect-pg-simple`)
 - Bcrypt para hash de senha
-- Supabase Storage (SDK `@supabase/supabase-js`) — anexos de chamados e ZIP/RAR/PDF, com signed URLs
 
 ## Frontend
 
 - HTML5
-- CSS3
+- CSS3 (inline, sem framework)
 - JavaScript (vanilla)
 
 ## Ferramentas
 
 - Git
 - GitHub
-- VS Code
-- Postman
+- DBeaver (administração do banco)
 
 ## Hospedagem
 
@@ -305,43 +168,40 @@ Os anexos de chamados **não** ficam no disco do servidor — eles vão direto p
 
 ---
 
-#  Estrutura de Pastas
+# Design System
+
+O projeto segue um tema escuro consistente em todas as telas (login, registro e área autenticada):
+
+- **Fontes:** Inter (interface) e JetBrains Mono (badges, status e mensagens de sistema)
+- **Cores principais:** fundo `#0b1120`, cards `#151e32`, azul de destaque `#4f8dfd`, verde de sucesso `#34c98f`, vermelho de erro `#f0716f`
+- **Componentes:** cards com `border-radius: 16px`, inputs e botões com `border-radius: 10px`, badges com `border-radius: 6px`
+
+Detalhes completos de tokens de cor, tipografia e componentes estão documentados em [`design-system.md`](./design-system.md).
+
+---
+
+# Estrutura de Pastas
 
 ```
-InsideBox
+sistema-login-com-banco-de-dados
 │
-├── backend
+├── backend (ou src)
 │   │
 │   ├── controllers
-│   │   └── chamadosController.js
-│   │
-│   ├── models
-│   │   └── userModel.js
+│   │   └── authController.js       (obterPerfil, e demais funções de auth)
 │   │
 │   ├── routes
-│   │   ├── authRoutes.js
-│   │   ├── chamados.js
-│   │   ├── protectedRoutes.js
-│   │   └── publicupload.js
+│   │   └── authRoutes.js           (/register, /login, /logout, /me)
 │   │
 │   ├── middleware
-│   │   ├── authMiddleware.js
-│   │   ├── authtrue.js
-│   │   ├── sanitize.js
-│   │   ├── validators.js
-│   │   └── upload.js              (multer com memoryStorage, limite de 5 arquivos/10MB)
-│   │
-│   ├── utils
-│   │   └── supabaseAnexos.js      (subirAnexo, removerAnexos, gerarUrlAssinada)
+│   │   └── authMiddleware.js       (exige sessão ativa)
 │   │
 │   ├── config
-│   │   ├── dbpg.js
-│   │   └── supabase.js
+│   │   └── db.js                   (pool de conexão com o PostgreSQL)
 │   │
 │   ├── database
 │   │   └── schema.sql
 │   │
-│   ├── uploads                    (avatares e vídeos — anexos de chamados não usam mais esta pasta)
 │   └── server.js
 │
 ├── frontend
@@ -349,13 +209,9 @@ InsideBox
 │   ├── pages
 │   │   ├── login.html
 │   │   ├── register.html
-│   │   ├── upload.html
-│   │   ├── dashboard.html          (lista de chamados + modal de detalhe com anexos)
-│   │   ├── admin.html
-│   │   └── 404.html
+│   │   └── logado.html             (área autenticada)
 │   │
-│   ├── css
-│   └── javascript
+│   └── design-system.md
 │
 ├── .env
 ├── package.json
@@ -364,7 +220,7 @@ InsideBox
 
 ---
 
-#  Instalação
+# Instalação
 
 ## Pré-requisitos
 
@@ -372,24 +228,19 @@ Antes de iniciar, tenha instalado:
 
 - Node.js 18+
 - Git
-- PostgreSQL 13+ configurado (De preferência em Cloud)
-- Conta/projeto no Supabase, com um bucket privado chamado `chamados-anexos` criado em Storage
-
----
+- PostgreSQL 13+ configurado
 
 ## Clonar o projeto
 
 ```bash
-git clone https://github.com/usuario/Sistema-de-Chamados-Empresarial.git
+git clone https://github.com/rikael7/Sistema-de-login-com-banco-de-dados.git
 ```
 
 Acesse a pasta:
 
 ```bash
-cd Sistema-de-Chamados-Empresarial
+cd Sistema-de-login-com-banco-de-dados
 ```
-
----
 
 ## Instalar dependências
 
@@ -400,50 +251,45 @@ npm install
 Dependências principais usadas no projeto:
 
 ```bash
-npm install express express-session pg bcrypt multer express-validator xss dotenv @supabase/supabase-js disposable-email-domains-js
+npm install express express-session pg bcrypt connect-pg-simple dotenv
 ```
 
 ---
 
-#  Configuração do Ambiente
+# Configuração do Ambiente
 
 Crie um arquivo `.env` na raiz do projeto:
 
 ```env
 PORT=3000
-DATABASE_URL=postgres://usuario:senha@localhost:5432/sistema-de-chamados
+DATABASE_URL=postgres://usuario:senha@localhost:5432/sistema_login
 SESSION_SECRET=sua_chave_secreta
-SUPABASE_URL=https://seu-projeto.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=sua_secret_key_do_supabase
 ```
 
-> ⚠️ `SUPABASE_SERVICE_ROLE_KEY` é a chave **secret** (antiga `service_role`), não a `publishable`/`anon`. Ela dá acesso total ao projeto Supabase — nunca deve ir para o Git. Confirme que `.env` está no `.gitignore`.
+> ⚠️ Nunca versione o `.env`. Confirme que ele está no `.gitignore`.
 
 ---
 
 # Banco de Dados
 
-O script completo de criação de tabelas está em [`database/schema.sql`](./schema.sql). Para aplicar:
+O script de criação de tabelas está em `database/schema.sql`. Para aplicar:
 
 ```bash
-psql -U seu_usuario -d insidebox -f schema.sql
+psql -U seu_usuario -d sistema_login -f schema.sql
 ```
+
+Ou, se preferir, rode direto no DBeaver.
 
 ## Tabelas
 
-| Tabela                | Descrição                                              |
-|------------------------|---------------------------------------------------------|
-| `users`                | Usuários, credenciais e flag de admin (`adm`)           |
-| `videos`               | Vídeos enviados pelo admin                              |
-| `chamados`             | Chamados/OS (título, categoria, status,    	prioridade)     
-| `chamado_anexos`       | Path dos arquivos no bucket do Supabase Storage (não é URL nem caminho local) |
-| `chamado_comentarios`  | Comentários/acompanhamento de um chamado                |
-
-Todas as chaves estrangeiras usam `ON DELETE CASCADE` (exceto `autor_id` em `chamado_comentarios`, que usa `SET NULL`). As tabelas `users` e `chamados` possuem *triggers* que atualizam automaticamente `updated_at` / `atualizado_em`.
+| Tabela    | Descrição                                                   |
+|-----------|--------------------------------------------------------------|
+| `users`   | Usuários: `id`, `name`, `email`, `password` (hash), `created_at` |
+| `session` | Sessões ativas, gerenciada automaticamente por `connect-pg-simple` |
 
 ---
 
-#  Executando o Projeto
+# Executando o Projeto
 
 Modo desenvolvimento:
 
@@ -465,7 +311,7 @@ http://localhost:3000
 
 ---
 
-#  Documentação da API
+# Documentação da API
 
 ## Autenticação
 
@@ -485,8 +331,6 @@ Exemplo de envio:
 }
 ```
 
----
-
 ### Login
 
 ```
@@ -498,7 +342,8 @@ Exemplo de envio:
 ```json
 {
   "email": "usuario@email.com",
-  "password": "Senha123"
+  "password": "Senha123",
+  "remember": false
 }
 ```
 
@@ -506,12 +351,9 @@ Resposta:
 
 ```json
 {
-  "message": "Login realizado com sucesso.",
-  "user": { "id": 1, "name": "Usuário Teste", "email": "usuario@email.com" }
+  "redirectTo": "/logado.html"
 }
 ```
-
----
 
 ### Logout
 
@@ -521,141 +363,62 @@ POST /auth/logout
 
 ---
 
-## Usuário (rotas protegidas)
-
-| Método | Rota              | Descrição                          |
-|--------|-------------------|--------------------------------------|
-| GET    | `/profile`        | Retorna dados do usuário logado      |
-| POST   | `/avatar`         | Atualiza o avatar (máx. 2MB)         |
-
----
-
-## Admin (rotas protegidas + permissão de admin)
-
-| Método | Rota                        | Descrição                       |
-|--------|------------------------------|-----------------------------------|
-| PATCH  | `/api/chamados/:id/status`   | Atualiza status do chamado       |
-| PATCH  | `/api/chamados/:id/prioridade` | Atualiza prioridade do chamado |
-| DELETE | `/api/chamados/:id`          | Exclui um chamado                |
-
----
-
-## Chamados
-
-### Criar chamado
+## Perfil (rota protegida)
 
 ```
-POST /api/chamados
+GET /api/me
 ```
 
-Exemplo de envio (multipart/form-data, até 5 anexos em `anexos`):
+Requer sessão ativa (cookie de sessão enviado automaticamente pelo navegador).
+
+Resposta:
 
 ```json
 {
-  "titulo": "Impressora não liga",
-  "categoria": "hardware",
-  "descricao": "A impressora do setor financeiro não liga."
+  "nome": "Usuário Teste",
+  "registradoEm": "2026-08-11T14:32:00.000Z"
 }
 ```
 
-Resposta inclui `anexos[]`, cada um já com `url` (signed URL do Supabase, válida por 1h).
-
-### Listar chamados
-
-```
-GET /api/chamados?status=aberto&categoria=hardware&prioridade=alta
-```
-
-Cada item traz `anexos` como contagem (número).
-
-### Detalhar chamado
-
-```
-GET /api/chamados/:id
-```
-
-Retorna o chamado completo, com `anexos[]` contendo `url` (signed URL gerada na hora) para cada arquivo — acessível por qualquer usuário autenticado, não só quem criou o chamado.
-
-### Adicionar anexos
-
-```
-POST /api/chamados/:id/anexos
-```
-
-### Adicionar comentário
-
-```
-POST /api/chamados/:id/comentarios
-```
+Sem sessão válida:
 
 ```json
 {
-  "mensagem": "Técnico a caminho.",
-  "autor_id": 1
+  "erro": "Nenhuma sessão ativa."
 }
 ```
+`401 Unauthorized`
 
 ---
 
-## Upload público
-
-```
-POST /api/upload/zip
-```
-
-Envia ZIP/RAR/PDF/imagem para o Supabase Storage (multipart/form-data, campo `arquivo`).
-
----
-
-#  Segurança
+# Segurança
 
 O projeto utiliza:
 
 - Hash de senha com **bcrypt** (nunca texto puro)
-- Regeneração de sessão no login (proteção contra *session fixation*)
-- Sanitização anti-XSS em todas as entradas de texto antes da validação
-- Whitelist de caracteres no nome (bloqueia tags/scripts)
-- Bloqueio de e-mails temporários/descartáveis e checagem de domínio (MX)
-- Limite de tamanho de senha alinhado ao truncamento do bcrypt (72 bytes)
-- `usuario_id` do chamado sempre extraído da sessão, nunca do corpo da requisição
-- Validação de tipo MIME e extensão no upload de avatar e arquivos
-- Anexos de chamados ficam em bucket **privado** no Supabase Storage — nunca acessíveis por link direto, apenas via signed URL de curta duração (1h)
-- Backend usa a **service_role key** do Supabase apenas no servidor, nunca exposta ao frontend
-- Rollback de transação também limpa arquivos já enviados ao Storage, evitando anexos órfãos
+- Sessão persistida em banco de dados via **connect-pg-simple**, não em memória
+- Cookie de sessão `httpOnly`, para não ser acessível via JavaScript no navegador
+- Rota protegida validada no **back-end** — o front-end nunca é a única barreira de acesso
+- Mensagens de erro de login genéricas (não revelam se o e-mail existe ou não na base)
 - Variáveis de ambiente para credenciais e chaves sensíveis
-- Controle de permissões (usuário x admin)
 
 ---
 
-#  Testes
-
-Executar testes:
-
-```bash
-npm test
-```
-
----
-
-#  Melhorias Futuras
+# Melhorias Futuras
 
 - [ ] Implementar recuperação de senha
-- [ ] Criar sistema de notificações (novo comentário, mudança de status)
-- [ ] Padronizar todas as queries para a sintaxe do PostgreSQL (`$1`, `$2`, ...)
-- [ ] Implementar `adminController.js` dedicado
-- [ ] Retornar respostas JSON consistentes no middleware `admin` (hoje faz `redirect`)
-- [ ] Melhorar testes automatizados
-- [ ] Criar aplicativo mobile
-- [ ] Implementar logs do sistema
+- [ ] Adicionar autenticação social (Google)
+- [ ] Expirar sessões automaticamente após período de inatividade
+- [ ] Adicionar testes automatizados
+- [ ] Criar página de erro 404 personalizada
 
 ---
 
-#  Como Contribuir
+# Como Contribuir
 
 Contribuições são bem-vindas.
 
 1. Faça um fork do projeto
-
 2. Crie uma branch:
 
 ```bash
@@ -663,11 +426,10 @@ git checkout -b minha-feature
 ```
 
 3. Faça suas alterações
-
 4. Commit:
 
 ```bash
-git commit -m "feat:Minha nova funcionalidade"
+git commit -m "feat: minha nova funcionalidade"
 ```
 
 5. Envie para o GitHub:
@@ -680,18 +442,17 @@ git push origin minha-feature
 
 ---
 
-#  Licença
+# Licença
 
 Este projeto está sob a licença MIT.
 
 ---
 
-#  Autor
+# Autor
 
-**Rikael Ribeiro de Araújo Moraes**
+**Rikael**
 
 - GitHub: https://github.com/rikael7
-- LinkedIn: https://linkedin.com/in/rikaeldev
 
 ---
 
