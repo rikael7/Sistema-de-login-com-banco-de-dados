@@ -58,13 +58,35 @@ O Sistema de Login com Banco de Dados foi criado para mostrar, de forma direta e
 - ✔ Confirmação de senha e aceite de termos no registro
 - ✔ Login com verificação de credenciais via bcrypt
 - ✔ Sessão de usuário persistida em banco de dados (não em memória)
-- ✔ Rota protegida por middleware — bloqueia acesso de quem não está logado, sem depender apenas do front-end
+- ✔ Rota protegida por middleware — bloqueia acesso de quem não está logado, sem depender apenas do    front-end
 - ✔ Logout que efetivamente destrói a sessão no servidor
 - ✔ Endpoint de perfil que retorna nome e data/hora de registro do usuário autenticado
 - ✔ Botão de acesso demonstrativo ("login como recrutador") para facilitar avaliação do projeto
 - ✔ Mensagens de erro e sucesso tratadas tanto no front quanto no back-end
 
 ---
+#  Demonstração
+
+
+
+Exemplo:
+
+## Tela do Login
+![Telas](./docs/Login.png)
+
+## Tela do Register
+![Telas](./docs/Register.png)
+
+## Tela de "Página não encontrada"
+![Telas](./docs/??.png)
+
+## Tela de Dashboard protegida por sessão logada 
+![Telas](./docs/Dashboard.png)
+
+
+
+---
+
 
 # Arquitetura do Projeto
 
