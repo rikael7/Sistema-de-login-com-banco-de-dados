@@ -1,6 +1,6 @@
 -- =========================================================
 -- Schema do banco de dados — Sistema de Login com Banco de Dados
--- Baseado nas queries usadas em authController.js
+-- Baseado nas queries usadas em no controller
 --
 -- Como rodar:
 --   psql -U seu_usuario -d seu_banco -f schema.sql
@@ -50,22 +50,6 @@ CREATE TRIGGER trg_users_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION set_updated_at();
 
--- ---------------------------------------------------------
--- Tabela: videos
--- Usada por uploadVideo (upload feito pelo admin)
--- ---------------------------------------------------------
-CREATE TABLE IF NOT EXISTS videos (
-    id             SERIAL PRIMARY KEY,
-    titulo         VARCHAR(150) NOT NULL,
-    descricao      TEXT,
-    nome_arquivo   VARCHAR(255) NOT NULL,
-    tipo_arquivo   VARCHAR(100),
-    tamanho        INTEGER,
-    usuario_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    criado_em      TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_videos_usuario_id ON videos (usuario_id);
 
 -- ---------------------------------------------------------
 -- Tabela: session
