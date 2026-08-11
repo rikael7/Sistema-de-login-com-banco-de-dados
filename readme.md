@@ -72,16 +72,16 @@ O Sistema de Login com Banco de Dados foi criado para mostrar, de forma direta e
 Exemplo:
 
 ## Tela do Login
-![Telas](./docs/Login.png)
+![Telas](./docs/Login.PNG)
 
 ## Tela do Register
-![Telas](./docs/Register.png)
+![Telas](./docs/Register.PNG)
 
 ## Tela de "Página não encontrada"
 ![Telas](./docs/??.png)
 
 ## Tela de Dashboard protegida por sessão logada 
-![Telas](./docs/Dashboard.png)
+![Telas](./docs/Dashboard.PNG)
 
 
 
