@@ -300,7 +300,7 @@ h1 {
             <input type="checkbox" id="remember" name="remember">
             Preencher dados automáticos
           </label>
-          <!-- <button type="button" class="forgot" id="forgotBtn">Esqueci minha senha</button> -->
+          <button type="button" class="forgot" id="forgotBtn">Esqueci minha senha</button>
         </div>
 
         <button type="submit" class="btn-primary" id="submitBtn">Login</button>
@@ -409,7 +409,7 @@ h1 {
     });
 
     document.getElementById('forgotBtn').addEventListener('click', () => {
-      window.location.href = '/forgot-password';
+      window.location.href = '/#';
     });
 
     document.getElementById('googleBtn').addEventListener('click', () => {
@@ -419,8 +419,8 @@ h1 {
     // Botão de acesso demonstrativo — preenche os campos com a conta de demonstração.
     // Usuário ainda precisa clicar em "Login" normalmente para enviar o formulário.
     document.getElementById('recruiterBtn').addEventListener('click', () => {
-      emailInput.value = 'recrutador@outlook.com';
-      passwordInput.value = 'Bemvindo548';
+      emailInput.value = 'recrutadorderikael@outlook.com';
+      passwordInput.value = 'bemvindo548';
       emailInput.classList.remove('error');
       passwordInput.classList.remove('error');
       emailError.style.display = 'none';
