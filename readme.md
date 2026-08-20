@@ -11,7 +11,7 @@ Quer testar o sistema em funcionamento?
 **Acesse a versão em produção:**
 **https://sistema-de-login-heii.onrender.com/**
 
-> **Observação:** dependendo do provedor de hospedagem, a primeira visita pode levar alguns segundos para o servidor iniciar (hibernação em planos gratuitos).
+> **Nota:** A aplicação está hospedada no Render e utiliza o Neon PostgreSQL no plano gratuito. No primeiro acesso, pode ser necessário aguardar alguns segundos para que o servidor do Render inicie e o banco de dados saia do estado de inatividade. Esse comportamento é esperado nos planos gratuitos.
 
 ## 🚧 Projeto em Desenvolvimento
 
